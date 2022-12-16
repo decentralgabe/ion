@@ -189,3 +189,42 @@ ecs-cli compose \
  --ecs-profile "$PROFILE_NAME" \
  --cluster-config "$PROFILE_NAME"
 ```
+
+## Connecting to the Cluster
+
+Open port 22 to ssh into the cluster's EC2 instance(s).
+
+```sh
+# Get my IP
+MY_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+
+# Get the security group
+SG="$(aws ec2 describe-security-groups --filters Name=tag:project,Values=ion | jq '.SecurityGroups[].GroupId')"
+
+# Add port 22 to the Security Group of the VPC
+aws ec2 authorize-security-group-ingress \
+        --group-id $(echo $SG | tr -d '"') \
+        --protocol tcp \
+        --port 22 \
+        --cidr "$MY_IP/32" | jq '.'
+```
+
+Connect to the EC2 instance. You can find the ip by doing `ecs-cli ps` and viewing the IP in the `Ports` column.
+
+```sh
+chmod 400 ~/.ssh/ion-cluster.pem
+ssh -i ~/.ssh/ion-cluster.pem ec2-user@xxx.xxx.xxx.xxx
+```
+
+Observe the running containers
+```sh
+docker ps
+```
+
+Once you find a container you'll be able to view its logs using
+
+```sh
+docker logs <container-id>
+```
+
+More info [can be found here](https://docs.docker.com/engine/reference/commandline/logs/).

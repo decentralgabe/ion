@@ -1,0 +1,6 @@
+version: 1
+task_definition:
+  efs_volumes:
+    - name: db_data
+      filesystem_id: fs-********
+      transit_encryption: ENABLED
