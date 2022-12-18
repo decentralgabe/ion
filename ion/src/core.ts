@@ -22,7 +22,7 @@ interface ServerConfig extends SidetreeConfig {
 }
 
 // Selecting core config file, environment variable overrides default config file.
-let configFilePath = '../json/testnet-core-config.json';
+let configFilePath = '../config/testnet-core-config.config';
 if (process.env.ION_CORE_CONFIG_FILE_PATH === undefined) {
   console.log(LogColor.yellow(`Environment variable ION_CORE_CONFIG_FILE_PATH undefined, using default core config path ${configFilePath} instead.`));
 } else {
@@ -32,7 +32,7 @@ if (process.env.ION_CORE_CONFIG_FILE_PATH === undefined) {
 const config: ServerConfig = require(configFilePath);
 
 // Selecting versioning file, environment variable overrides default config file.
-let versioningConfigFilePath = '../json/testnet-core-versioning.json';
+let versioningConfigFilePath = '../config/testnet-core-versioning.config';
 if (process.env.ION_CORE_VERSIONING_CONFIG_FILE_PATH === undefined) {
   console.log(LogColor.yellow(
     `Environment variable ION_CORE_VERSIONING_CONFIG_FILE_PATH undefined, using default core versioning config path ${versioningConfigFilePath} instead.`
@@ -116,7 +116,7 @@ const setKoaResponse = (response: SidetreeResponseModel, koaResponse: Koa.Respon
   koaResponse.status = SidetreeResponse.toHttpStatus(response.status);
 
   if (response.body) {
-    koaResponse.set('Content-Type', 'application/json');
+    koaResponse.set('Content-Type', 'application/config');
     koaResponse.body = response.body;
   } else {
     // Need to set the body explicitly to empty string, else koa will echo the request as the response.

@@ -27,7 +27,7 @@ async function handleRequestAndSetKoaResponse (requestHandler: () => Promise<any
   try {
     const responseBody = await requestHandler();
     koaResponse.status = 200;
-    koaResponse.set('Content-Type', 'application/json');
+    koaResponse.set('Content-Type', 'application/config');
 
     if (responseBody) {
       koaResponse.body = JSON.stringify(responseBody);
@@ -57,7 +57,7 @@ async function handleRequestAndSetKoaResponse (requestHandler: () => Promise<any
 }
 
 // Selecting configuration file, environment variable overrides default config file.
-let configFilePath = '../json/testnet-bitcoin-config.json';
+let configFilePath = '../config/testnet-bitcoin-config.config';
 if (process.env.ION_BITCOIN_CONFIG_FILE_PATH === undefined) {
   console.log(LogColor.yellow(`Environment variable ION_BITCOIN_CONFIG_FILE_PATH undefined, using default path ${configFilePath} instead.`));
 } else {
@@ -67,7 +67,7 @@ if (process.env.ION_BITCOIN_CONFIG_FILE_PATH === undefined) {
 const config: IBitcoinServiceConfig = require(configFilePath);
 
 // Selecting versioning file, environment variable overrides default config file.
-let versioningConfigFilePath = '../json/testnet-bitcoin-versioning.json';
+let versioningConfigFilePath = '../config/testnet-bitcoin-versioning.config';
 if (process.env.ION_BITCOIN_VERSIONING_CONFIG_FILE_PATH === undefined) {
   console.log(LogColor.yellow(
     `Environment variable ION_BITCOIN_VERSIONING_CONFIG_FILE_PATH undefined, using default ION bitcoin versioning config path ${versioningConfigFilePath}.`
