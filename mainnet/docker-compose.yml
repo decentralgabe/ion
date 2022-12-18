@@ -6,6 +6,7 @@ services:
     command: -printtoconsole -txindex -server -rpcuser=user -rpcpassword=password -rpcallowip=0.0.0.0/0 -rpcbind=0.0.0.0
     environment:
       - BITCOIN_DATA=/data/bitcoin
+      - ION_DATA_VOLUME=db_data
     volumes:
       # the ":-" means if ION_DATA_VOLUME is not set or empty, substitute with "~/ion-data"
       # see https://docs.docker.com/compose/compose-file/compose-file-v3/#variable-substitution for detail on variable substitution
@@ -22,6 +23,8 @@ services:
   mongo:
     container_name: mongo
     image: mongo:4.0.27-xenial
+    environment:
+      - ION_DATA_VOLUME=db_data
     volumes:
       # mongo image by default writes to `/data/db` inside the container
       - ${ION_DATA_VOLUME:-~/ion-data}/mongo:/data/db
@@ -39,6 +42,7 @@ services:
     image: ipfs/go-ipfs:v0.13.0
     environment:
       - IPFS_PATH=/data/ipfs
+      - ION_DATA_VOLUME=db_data
     volumes:
       - ${ION_DATA_VOLUME:-~/ion-data}/ipfs:/data/ipfs
     ports:
@@ -57,8 +61,9 @@ services:
     command: [ node, "src/bitcoin.js" ]
     working_dir: /ion
     environment:
-      - ION_BITCOIN_CONFIG_FILE_PATH=/json/docker-mainnet-bitcoin-config.json
-      - ION_BITCOIN_VERSIONING_CONFIG_FILE_PATH=/json/mainnet-bitcoin-versioning.json
+      - ION_DATA_VOLUME=db_data
+      - ION_BITCOIN_CONFIG_FILE_PATH=/config/docker-mainnet-bitcoin-config.json
+      - ION_BITCOIN_VERSIONING_CONFIG_FILE_PATH=/config/mainnet-bitcoin-versioning.json
     volumes:
       # for optional fast initialization feature
       - ${ION_DATA_VOLUME:-~/ion-data}/bitcoin:/data/bitcoin
@@ -77,8 +82,9 @@ services:
     command: [ node, "src/core.js" ]
     working_dir: /ion
     environment:
-      - ION_CORE_CONFIG_FILE_PATH=/json/docker-mainnet-core-config.json
-      - ION_CORE_VERSIONING_CONFIG_FILE_PATH=/json/mainnet-core-versioning.json
+      - ION_DATA_VOLUME=db_data
+      - ION_CORE_CONFIG_FILE_PATH=/config/docker-mainnet-core-config.json
+      - ION_CORE_VERSIONING_CONFIG_FILE_PATH=/config/mainnet-core-versioning.json
     ports:
       - "3000:3000"
     logging:
