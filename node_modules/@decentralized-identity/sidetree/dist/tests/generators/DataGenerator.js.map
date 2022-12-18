@@ -1,0 +1,1 @@
+{"version":3,"file":"DataGenerator.js","sourceRoot":"","sources":["../../../tests/generators/DataGenerator.ts"],"names":[],"mappings":";;AAAA;;GAEG;AACH,MAAqB,aAAa;IAEhC;;;OAGG;IACI,MAAM,CAAC,eAAe,CAAE,MAAc,GAAG;QAC9C,OAAO,IAAI,CAAC,KAAK,CAAC,IAAI,CAAC,MAAM,EAAE,GAAG,GAAG,CAAC,CAAC;IACzC,CAAC;CACF;AATD,gCASC"}

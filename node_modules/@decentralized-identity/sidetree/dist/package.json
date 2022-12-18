@@ -1,0 +1,119 @@
+{
+  "name": "@decentralized-identity/sidetree",
+  "version": "1.0.6",
+  "description": "Node.js implementation of Sidetree.",
+  "repository": "https://github.com/decentralized-identity/sidetree",
+  "license": "Apache-2.0",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "dependencies": {
+    "base64url": "3.0.1",
+    "bitcore-lib": "8.22.2",
+    "canonicalize": "1.0.1",
+    "chalk": "4.0.0",
+    "cids": "1.1.4",
+    "http-status": "1.3.2",
+    "jose": "1.28.1",
+    "mongodb": "3.6.4",
+    "multihashes": "0.4.14",
+    "node-fetch": "2.6.7",
+    "priorityqueue": "1.0.0",
+    "semver": "7.3.5",
+    "time-span": "3.1.0",
+    "uri-js": "4.4.0",
+    "yieldable-json": "1.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^10.0.0",
+    "@ryansonshine/cz-conventional-changelog": "^3.3.4",
+    "@types/async-retry": "1.4.0",
+    "@types/bitcore-lib": "0.15.1",
+    "@types/http-status": "0.2.30",
+    "@types/jasmine": "3.3.12",
+    "@types/mongodb": "3.6.9",
+    "@types/node": "11.13.4",
+    "@types/node-fetch": "2.6.1",
+    "@types/semver": "7.3.5",
+    "@types/time-span": "2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "async-retry": "1.2.3",
+    "conventional-changelog": "3.1.18",
+    "conventional-changelog-cli": "2.0.35",
+    "copyfiles": "2.3.0",
+    "eslint": "^7.10.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "1.3.1",
+    "istanbul-badges-readme": "^1.8.1",
+    "jasmine": "^3.7.0",
+    "jasmine-reporters": "^2.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "mongodb-memory-server": "^8.5.2",
+    "nyc": "^15.1.0",
+    "ts-node": "8.3.0",
+    "tslint": "5.11.0",
+    "tslint-config-standard": "8.0.1",
+    "typescript": "3.9.6"
+  },
+  "scripts": {
+    "commit": "git-cz",
+    "build": "tsc && copyfiles \"lib/**/*.json\" dist && copyfiles \"tests/**/*.js*\" dist && copyfiles \"package.json\" dist",
+    "test": "npm run build && nyc jasmine --config=./tests/jasmine.json && npm run badge:cc",
+    "test:only": "nyc jasmine --config=./tests/jasmine.json",
+    "test:generate-vectors": "node dist/tests/generators/TestVectorGenerator.js",
+    "util:generate-error-codes": "node dist/tests/generators/ErrorCodeGenerator.js",
+    "publish:unstable": "./scripts/publish-unstable.sh",
+    "publish:release": "./scripts/publish.sh",
+    "version:release": "npm version --message \"chore(ref-imp): official release\"",
+    "lint": "eslint --ext ts lib/ tests/",
+    "lint:fix": "eslint --ext ts lib/ tests/ --fix",
+    "badge:cc": "istanbul-badges-readme",
+    "badge:cc:ci": "npm run badge:cc -- --ci",
+    "spec": "node -e \"require('spec-up')({ nowatch: true })\"",
+    "spec:edit": "node -e \"require('spec-up')()\"",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "nyc": {
+    "all": true,
+    "cache": false,
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "dist/lib/**",
+      "lib/**"
+    ],
+    "exclude": [
+      "**/index.d.ts",
+      "**/index.ts",
+      "lib/bitcoin/versions/[0-9]**/**",
+      "lib/core/versions/[0-9]**/**",
+      "lib/core/versions/**/PatchActions.ts",
+      "lib/core/versions/**/VersionMetadata.ts",
+      "lib/**/**ErrorCode.ts",
+      "lib/**/**EventCode.ts"
+    ],
+    "reporter": [
+      "text",
+      "cobertura",
+      "html",
+      "json-summary"
+    ]
+  }
+}
