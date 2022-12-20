@@ -31,8 +31,8 @@ export PROFILE_NAME=ion
 export CLUSTER_NAME=ion-cluster
 export REGION=us-west-2
 export LAUNCH_TYPE=EC2
-export AWS_ACCESS_KEY_ID="your access key"
-export AWS_SECRET_ACCESS_KEY="your secret key"
+export AWS_ACCESS_KEY_ID="access key"
+export AWS_SECRET_ACCESS_KEY="secret key"
 ```
 
 2. Create keypair for the cluster
@@ -98,13 +98,13 @@ Add mount points to each VPC subnet
 aws ec2 describe-subnets --filters Name=tag:project,Values=ion \
  | jq ".Subnets[].SubnetId" | \
 xargs -ISUBNET  aws efs create-mount-target \
- --file-system-id fs-******** --subnet-id SUBNET
+ --file-system-id fs-******* --subnet-id SUBNET
 ```
 
 Get the security group associated with each mount target
 
 ```sh
-EFS_SG=$(aws efs describe-mount-targets --file-system-id fs-******** \
+EFS_SG=$(aws efs describe-mount-targets --file-system-id fs-****** \
     | jq ".MountTargets[0].MountTargetId" \
      | xargs -IMOUNTG aws efs describe-mount-target-security-groups \
      --mount-target-id MOUNTG | jq ".SecurityGroups[0]" | xargs echo )
@@ -127,6 +127,12 @@ aws ec2 authorize-security-group-ingress \
  --port 2049 \
  --source-group $VPC_SG \
  --region "$REGION"
+```
+
+Next you'll need to SSH into the EC2 instance and manually mount EFS. You can do it, once SSH'd in, with the following command
+
+```sh
+sudo mount -t efs fs-****** db_data
 ```
 
 7. Connect
@@ -228,3 +234,38 @@ docker logs <container-id>
 ```
 
 More info [can be found here](https://docs.docker.com/engine/reference/commandline/logs/).
+
+## Building a new image
+
+
+1. Build a new image
+
+```sh
+docker buildx build --platform=linux/amd64 -t ion-js . --load
+```
+
+2. Tag the image
+
+```sh
+docker tag ion-js:latest <account-id>.dkr.ecr.us-west-2.amazonaws.com/ion-js:latest
+```
+
+3. Push the image to ECR
+
+```sh
+docker push <account-id>.dkr.ecr.us-west-2.amazonaws.com/ion-js:latest
+```
+
+### Pulling from an EC2 image
+
+Sometimes it's helpful to pull a new image while SSH'd into EC2. You can do so with the following command:
+
+```sh
+docker pull <account-id>.dkr.ecr.us-west-2.amazonaws.com/ion-js:latest
+```
+
+If you get an error you may need to authenticate ECR first, which can be done with the following command:
+
+```sh
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-west-2.amazonaws.com
+```
