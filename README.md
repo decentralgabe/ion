@@ -40,9 +40,9 @@ export AWS_SECRET_ACCESS_KEY="secret key"
 ```sh
 aws ec2 \
  --region="$REGION" \
- create-key-pair --key-name "$CLUSTER_NAME" \
+ create-key-pair --key-name "$KEY_PAIR" \
  --query 'KeyMaterial' \
- --output text > ~/.ssh/ion-cluster.pem
+ --output text > ~/.ssh/"$KEY_PAIR.pem"
 ```
 
 3. Create an EFS that will be used by `ION_DATA_VOLUME`
@@ -79,7 +79,7 @@ ecs-cli configure \
 ```sh
 ecs-cli up \
  --region "$REGION" \
- --keypair $KEY_PAIR  \
+ --keypair "$KEY_PAIR" \
  --capability-iam \
  --size 1 \
  --instance-type t3.medium \
@@ -122,10 +122,10 @@ Authorize TCP Port 2049 from the default security group of the VPC
 
 ```sh
 aws ec2 authorize-security-group-ingress \
- --group-id $EFS_SG \
+ --group-id "$EFS_SG" \
  --protocol tcp \
  --port 2049 \
- --source-group $VPC_SG \
+ --source-group "$VPC_SG" \
  --region "$REGION"
 ```
 
