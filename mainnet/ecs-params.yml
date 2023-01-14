@@ -1,6 +1,0 @@
-version: 1
-task_definition:
-  efs_volumes:
-    - name: ion_data
-      filesystem_id: fs-05e31c1d327a0d9d3
-      transit_encryption: ENABLED
