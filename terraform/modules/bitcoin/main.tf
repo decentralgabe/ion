@@ -26,14 +26,39 @@ resource "aws_lb" "ecs_cluster_lb" {
   enable_http2                     = "true"
   enable_cross_zone_load_balancing = "true"
 
-  # access_logs {
-  #   bucket  = aws_s3_bucket.lb_logs.bucket
-  #   prefix  = local.namespace
-  #   enabled = true
-  # }
+  access_logs {
+    bucket  = module.s3_alb.s3_bucket_id
+    prefix  = local.namespace
+    enabled = true
+  }
 
   tags = {
     Name = "${local.namespace}-ecs-cluster-lb"
+    Env  = "${var.env}"
+  }
+}
+
+module "s3_alb" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.6.0"
+
+  bucket = "${local.namespace}-alb-logs"
+  acl    = "private"
+
+  attach_elb_log_delivery_policy = true
+
+  lifecycle_rule = [
+    {
+      id      = "log"
+      enabled = true
+      expiration = {
+        days = 60
+      }
+    }
+  ]
+
+  tags = {
+    Name = "${local.namespace}-ecs-cluster-lb-logs"
     Env  = "${var.env}"
   }
 }

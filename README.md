@@ -25,7 +25,32 @@ Make sure you have both the [AWS CLI](https://aws.amazon.com/cli/) and [Terrafor
 
 ## Deploying
 
+-1. Get an aws session using the aws cli
+
+Here are some helpful aliases:
+
+- `alias awho='aws sts get-caller-identity'`
+- `apro () {
+    export AWS_PROFILE=$1 AWS_SDK_LOAD_CONFIG=1
+}`
+
+With an `~/.aws/credentials` file with a number of profiles like...
+
+```
+[dev]
+aws_access_key_id=<access-key-id>
+aws_secret_access_key=<secret-access-key>
+
+[staging]
+aws_access_key_id=<access-key-id>
+aws_secret_access_key=<secret-access-key>
+```
+
+You can then run `apro dev` to switch to the dev profile...and confirm with `awho`.
+
 0. Alias `terraform` to `tf`
+
+`alias tf=terraform`
 
 1. Initialize your directory
 

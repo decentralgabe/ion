@@ -203,11 +203,29 @@ resource "aws_security_group" "default" {
   depends_on = [aws_vpc.vpc]
 }
 
-resource "aws_security_group_rule" "world_to_ecs_task" {
+resource "aws_security_group_rule" "swarm_port" {
   type              = "ingress"
   cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 8332
-  to_port           = 8333
+  from_port         = 4001
+  to_port           = 4001
+  protocol          = "tcp"
+  security_group_id = aws_security_group.default.id
+}
+
+resource "aws_security_group_rule" "rpc_port" {
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 5001
+  to_port           = 5001
+  protocol          = "tcp"
+  security_group_id = aws_security_group.default.id
+}
+
+resource "aws_security_group_rule" "gateway_port" {
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 8080
+  to_port           = 8080
   protocol          = "tcp"
   security_group_id = aws_security_group.default.id
 }

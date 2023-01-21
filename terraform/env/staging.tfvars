@@ -1,8 +1,23 @@
 # AWS Config
-region = "us-west-2"
-env    = "staging"
+aws_region = "us-west-2"
+env        = "staging"
 
 # Networking
-vpc_cidr             = "10.0.0.0/16"
-public_subnets_cidr  = ["10.0.1.0/24"]
-private_subnets_cidr = ["10.0.10.0/24"]
+vpc_cidr              = "10.0.0.0/16"
+public_subnet_cidr_1  = "10.0.0.0/20"
+public_subnet_cidr_2  = "10.0.16.0/20"
+private_subnet_cidr_1 = "10.0.128.0/20"
+private_subnet_cidr_2 = "10.0.144.0/20"
+availability_zone_1   = "us-west-2a"
+availability_zone_2   = "us-west-2b"
+
+# Bitcoin
+bitcoin_container_image = "ruimarinho/bitcoin-core:23.0"
+
+# IPFS
+ipfs_container_image   = "844731274526.dkr.ecr.us-west-2.amazonaws.com/ipfs-with-config:latest"
+ipfs_ec2_instance_type = "t3.xlarge"
+ipfs_key_name          = "gabe"
+ipfs_task_cpu          = "4096"
+ipfs_task_cpu_count    = "4"
+ipfs_task_memory       = "15500"

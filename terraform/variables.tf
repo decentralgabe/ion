@@ -9,7 +9,6 @@ variable "env" {
   description = "environment description used for namespacing"
 }
 
-// Bitcoin
 variable "vpc_cidr" {
   type        = string
   description = "The CIDR block of the vpc"
@@ -45,6 +44,8 @@ variable "availability_zone_2" {
   description = "The second az that the resources will be launched in"
 }
 
+// Bitcoin
+
 variable "bitcoin_container_image" {
   type        = string
   description = "bitcoin image value e.g. \"ruimarinho/bitcoin-core:23.0\""
@@ -52,40 +53,34 @@ variable "bitcoin_container_image" {
 
 // IPFS
 
-variable "ipfs_cpu" {
-  type        = number
-  description = "vCPU units to allocate to the IPFS ECS task"
-  default     = 1024 # 1024 = 1 vCPU
-}
-
-variable "ipfs_memory" {
-  type        = number
-  description = "Memory allocation per IPFS API instance"
-  default     = 8192
-}
-
-variable "ipfs_task_count" {
-  type        = number
-  description = "Number of IPFS ECS tasks to run in the ECS service"
-  default     = 1
-}
-
-variable "ipfs_enable_alb_logging" {
-  type        = bool
-  description = "True to enable ALB logs (stored in a new S3 bucket)"
-  default     = false
-}
-
-variable "ipfs_default_log_level" {
+variable "ipfs_container_image" {
   type        = string
-  description = "IPFS default log level"
-  default     = "info"
+  description = "ipfs image value e.g. \"ipfs/kubo:master-2023-01-17-5d864fa\""
 }
 
-variable "use_existing_ipfs_peer_identities" {
+variable "ipfs_ec2_instance_type" {
   type        = string
-  description = "Use existing IPFS peer identities"
-  default     = false
+  description = "ec2 instance type to run"
+}
+
+variable "ipfs_key_name" {
+  type        = string
+  description = "ssh key to add to ec2 instances"
+}
+
+variable "ipfs_task_cpu" {
+  type        = string
+  description = "vCPU for instance * 1024 https://aws.amazon.com/ec2/instance-types/"
+}
+
+variable "ipfs_task_cpu_count" {
+  type        = string
+  description = "vCPU count for instance https://aws.amazon.com/ec2/instance-types/"
+}
+
+variable "ipfs_task_memory" {
+  type        = string
+  description = "Memory limit for instance in GiB * 1024 https://aws.amazon.com/ec2/instance-types/"
 }
 
 // ION

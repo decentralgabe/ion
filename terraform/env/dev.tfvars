@@ -13,3 +13,11 @@ availability_zone_2   = "us-east-1b"
 
 # Bitcoin
 bitcoin_container_image = "ruimarinho/bitcoin-core:23.0"
+
+# IPFS
+ipfs_container_image   = "844731274526.dkr.ecr.us-east-1.amazonaws.com/ipfs-with-config:latest"
+ipfs_ec2_instance_type = "t3.large"
+ipfs_key_name          = "gabe"
+ipfs_task_cpu          = "2048"
+ipfs_task_cpu_count    = "2"
+ipfs_task_memory       = "7873"
