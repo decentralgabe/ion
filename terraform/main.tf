@@ -7,38 +7,43 @@ provider "docker" {
 }
 
 module "bitcoin" {
-  source                  = "./modules/bitcoin"
-  aws_region              = var.aws_region
-  env                     = var.env
-  namespace               = "${var.env}-bitcoin"
-  vpc_cidr                = var.vpc_cidr
-  public_subnet_cidr_1    = var.public_subnet_cidr_1
-  public_subnet_cidr_2    = var.public_subnet_cidr_2
-  private_subnet_cidr_1   = var.private_subnet_cidr_1
-  private_subnet_cidr_2   = var.private_subnet_cidr_2
-  availability_zone_1     = var.availability_zone_1
-  availability_zone_2     = var.availability_zone_2
-  bitcoin_container_image = var.bitcoin_container_image
+  source                    = "./modules/bitcoin"
+  aws_region                = var.aws_region
+  env                       = var.env
+  namespace                 = "${var.env}-bitcoin"
+  vpc_cidr                  = var.vpc_cidr
+  public_subnet_cidr_1      = var.public_subnet_cidr_1
+  public_subnet_cidr_2      = var.public_subnet_cidr_2
+  private_subnet_cidr_1     = var.private_subnet_cidr_1
+  private_subnet_cidr_2     = var.private_subnet_cidr_2
+  availability_zone_1       = var.availability_zone_1
+  availability_zone_2       = var.availability_zone_2
+  bitcoin_container_image   = var.bitcoin_container_image
+  bitcoin_ec2_instance_type = var.bitcoin_ec2_instance_type
+  bitcoin_key_name          = var.bitcoin_key_name
+  bitcoin_task_cpu          = var.bitcoin_task_cpu
+  bitcoin_task_cpu_count    = var.bitcoin_task_cpu_count
+  bitcoin_task_memory       = var.bitcoin_task_memory
 }
 
 module "ipfs" {
-  source                 = "./modules/ipfs"
-  aws_region             = var.aws_region
-  env                    = var.env
-  namespace              = "${var.env}-ipfs"
-  vpc_cidr               = var.vpc_cidr
-  public_subnet_cidr_1   = var.public_subnet_cidr_1
-  public_subnet_cidr_2   = var.public_subnet_cidr_2
-  private_subnet_cidr_1  = var.private_subnet_cidr_1
-  private_subnet_cidr_2  = var.private_subnet_cidr_2
-  availability_zone_1    = var.availability_zone_1
-  availability_zone_2    = var.availability_zone_2
-  ipfs_container_image   = var.ipfs_container_image
-  ipfs_ec2_instance_type = var.ipfs_ec2_instance_type
-  ipfs_key_name          = var.ipfs_key_name
-  ipfs_task_cpu          = var.ipfs_task_cpu
-  ipfs_task_cpu_count    = var.ipfs_task_cpu_count
-  ipfs_task_memory       = var.ipfs_task_memory
+  source                       = "./modules/ipfs"
+  aws_region                   = var.aws_region
+  env                          = var.env
+  namespace                    = "${var.env}-ipfs"
+  vpc_cidr                     = var.vpc_cidr
+  public_subnet_cidr_1         = var.public_subnet_cidr_1
+  public_subnet_cidr_2         = var.public_subnet_cidr_2
+  private_subnet_cidr_1        = var.private_subnet_cidr_1
+  private_subnet_cidr_2        = var.private_subnet_cidr_2
+  availability_zone_1          = var.availability_zone_1
+  availability_zone_2          = var.availability_zone_2
+  ipfs_container_image_version = var.ipfs_container_image_version
+  ipfs_ec2_instance_type       = var.ipfs_ec2_instance_type
+  ipfs_key_name                = var.ipfs_key_name
+  ipfs_task_cpu                = var.ipfs_task_cpu
+  ipfs_task_cpu_count          = var.ipfs_task_cpu_count
+  ipfs_task_memory             = var.ipfs_task_memory
 }
 
 # module "ion" {

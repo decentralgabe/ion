@@ -48,9 +48,9 @@ variable "availability_zone_2" {
   description = "The second az that the resources will be launched in"
 }
 
-variable "ipfs_container_image" {
+variable "ipfs_container_image_version" {
   type        = string
-  description = "ipfs image value e.g. \"ipfs/kubo:master-2023-01-17-5d864fa\""
+  description = "ipfs image version value e.g. `latest`"
 }
 
 variable "ipfs_ec2_instance_type" {

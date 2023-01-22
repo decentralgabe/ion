@@ -1,3 +1,3 @@
-FROM 'ipfs/kubo:master-2023-01-21-c706c63'
+FROM 'ipfs/kubo:v0.16.0'
 
 COPY ipfs-conf.sh /container-init.d/

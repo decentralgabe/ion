@@ -1,5 +1,5 @@
 # Cluster
-module "ecs" {
+module "ecs_ipfs" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "~> 4.1.2"
 
@@ -22,8 +22,8 @@ module "ecs" {
   default_capacity_provider_use_fargate = false
 
   autoscaling_capacity_providers = {
-    one = {
-      auto_scaling_group_arn = module.autoscaling.autoscaling_group_arn
+    ipfs-capacity = {
+      auto_scaling_group_arn = module.autoscaling_ipfs.autoscaling_group_arn
 
       managed_scaling = {
         status          = "ENABLED"
@@ -38,11 +38,6 @@ module "ecs" {
   }
 
   depends_on = [aws_vpc.vpc]
-}
-
-# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html#ecs-optimized-ami-linux
-data "aws_ssm_parameter" "ecs_optimized_ami" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
 }
 
 resource "aws_iam_service_linked_role" "autoscaling_linked_role" {
@@ -79,11 +74,12 @@ resource "aws_iam_role" "ssm_iam_role" {
   })
 }
 
-module "autoscaling" {
+# Autoscaling
+module "autoscaling_ipfs" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "~> 6.7.0"
 
-  name = "${local.namespace}-ecs-instance"
+  name = "${local.namespace}-ecs-autoscaling"
 
   key_name = var.ipfs_key_name
 
@@ -120,14 +116,12 @@ module "autoscaling" {
     AmazonSSMManagedInstanceCore        = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
-  # target_group_arns = [module.ecs_lb.target_group_arns[0]]
-
   network_interfaces = [
     {
       delete_on_termination = true
       description           = "ssh, autoscaling, ipfs, efs"
       device_index          = 0
-      security_groups       = [aws_security_group.allow_ssh.id, module.autoscaling_sg.security_group_id, aws_security_group.default.id, aws_security_group.efs_sg.id]
+      security_groups       = [aws_security_group.allow_ssh.id, module.autoscaling_sg_ipfs.security_group_id, aws_security_group.default.id, aws_security_group.efs_sg.id]
     }
   ]
 
@@ -142,7 +136,7 @@ module "autoscaling" {
   }
 }
 
-module "autoscaling_sg" {
+module "autoscaling_sg_ipfs" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.17.1"
 
@@ -217,95 +211,10 @@ module "autoscaling_sg" {
   }
 }
 
-# Load Balancer
-module "ecs_lb" {
-  source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.2.1"
-
-  name               = "${local.namespace}-alb"
-  load_balancer_type = "application"
-  vpc_id             = aws_vpc.vpc.id
-  security_groups    = [aws_security_group.default.id]
-  subnets = [
-    "${aws_subnet.public_subnet_1.id}",
-    "${aws_subnet.public_subnet_2.id}"
-  ]
-
-  access_logs = {
-    bucket  = module.s3_alb.s3_bucket_id
-    prefix  = local.namespace
-    enabled = true
-  }
-
-  http_tcp_listeners = [
-    {
-      port               = 4001
-      protocol           = "HTTP"
-      target_group_index = 0
-    },
-    {
-      port               = 8080
-      protocol           = "HTTP"
-      target_group_index = 0
-    }
-  ]
-
-  target_groups = [
-    {
-      name_prefix          = "ecs-tg"
-      backend_protocol     = "HTTP"
-      backend_port         = 8080
-      target_type          = "ip"
-      deregistration_delay = 10
-      health_check = {
-        enabled             = true
-        interval            = 30
-        path                = "/api/v0"
-        port                = "5001"
-        healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 6
-        protocol            = "HTTP"
-        matcher             = "200-399"
-      }
-    }
-  ]
-
-  tags = {
-    Name = "${local.namespace}-ecs-cluster-lb"
-    Env  = "${var.env}"
-  }
-}
-
-module "s3_alb" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.6.0"
-
-  bucket = "${local.namespace}-alb-logs"
-  acl    = "private"
-
-  attach_elb_log_delivery_policy = true
-
-  lifecycle_rule = [
-    {
-      id      = "log"
-      enabled = true
-      expiration = {
-        days = 60
-      }
-    }
-  ]
-
-  tags = {
-    Name = "${local.namespace}-ecs-cluster-lb-logs"
-    Env  = "${var.env}"
-  }
-}
-
 # Service
 resource "aws_ecs_service" "ecs_service" {
   name    = "${local.namespace}-ecs-service"
-  cluster = module.ecs.cluster_id
+  cluster = module.ecs_ipfs.cluster_id
 
   network_configuration {
     assign_public_ip = false
@@ -313,7 +222,7 @@ resource "aws_ecs_service" "ecs_service" {
       "${aws_security_group.default.id}",
       "${aws_security_group.allow_ssh.id}",
       "${aws_security_group.efs_sg.id}",
-      "${module.autoscaling_sg.security_group_id}"
+      "${module.autoscaling_sg_ipfs.security_group_id}"
     ]
     subnets = [
       "${aws_subnet.private_subnet_1.id}",
@@ -322,7 +231,7 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   load_balancer {
-    target_group_arn = module.ecs_lb.target_group_arns[0]
+    target_group_arn = module.ecs_lb_ipfs.target_group_arns[0]
     container_name   = local.ipfs_container_image_name
     container_port   = 8080
   }
@@ -351,7 +260,7 @@ resource "aws_ecs_service" "ecs_service" {
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = templatefile("${path.module}/templates/ecs_ipfs_task.tpl", {
     ipfs_container_image_name = local.ipfs_container_image_name
-    ipfs_container_image      = var.ipfs_container_image
+    ipfs_container_image      = "${aws_ecr_repository.ecr_repo.repository_url}:${var.ipfs_container_image_version}"
     ipfs_task_cpu_count       = tonumber(var.ipfs_task_cpu_count)
     ipfs_task_memory          = tonumber(var.ipfs_task_memory)
     aws_region                = var.aws_region
@@ -426,56 +335,6 @@ resource "aws_cloudwatch_log_group" "ecs_task_log_group" {
 
   tags = {
     Name = "${local.namespace}-ecs-cluter-task-definition"
-    Env  = "${var.env}"
-  }
-}
-
-
-# allow ssh into private instances
-resource "aws_security_group" "allow_ssh" {
-  vpc_id      = aws_vpc.vpc.id
-  name        = "allow-ssh"
-  description = "security group that allows ssh and all egress traffic"
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "${local.namespace}-allow-ssh-sg"
-    Env  = "${var.env}"
-  }
-}
-
-
-# ssh bastion
-resource "aws_instance" "bastion_instance" {
-  ami           = jsondecode(data.aws_ssm_parameter.ecs_optimized_ami.value)["image_id"]
-  instance_type = "t2.micro"
-
-  subnet_id = aws_subnet.public_subnet_1.id
-
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-
-  key_name = var.ipfs_key_name
-
-  metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 32
-    instance_metadata_tags      = "enabled"
-  }
-
-  tags = {
-    Name = "${local.namespace}-bastion-instance"
     Env  = "${var.env}"
   }
 }

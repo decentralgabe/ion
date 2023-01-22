@@ -10,9 +10,9 @@ resource "aws_efs_file_system" "efs_file_system" {
 
   depends_on = [aws_vpc.vpc]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_efs_mount_target" "efs_mount_target_1" {

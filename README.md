@@ -70,4 +70,4 @@ You can then run `apro dev` to switch to the dev profile...and confirm with `awh
 
 5. Destroy
 
-`tf destroy`
+`tf destroy -var-file="env/<env>.tfvars"`

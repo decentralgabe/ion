@@ -12,4 +12,4 @@ ipfs config --json -- AutoNAT '{ "ServiceMode": "disabled" }'
 ipfs config --json -- Address '{ "Gateway": "/ip4/0.0.0.0/tcp/8080"}'
 
 # https://github.com/ipfs/kubo/blob/master/docs/experimental-features.md#accelerated-dht-client
-ipfs config --json Experimental.AcceleratedDHTClient true
+ipfs config --json -- Experimental '{ "AcceleratedDHTClient": true }'

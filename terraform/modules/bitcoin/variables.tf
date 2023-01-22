@@ -52,3 +52,28 @@ variable "bitcoin_container_image" {
   type        = string
   description = "bitcoin image value e.g. \"ruimarinho/bitcoin-core:23.0\""
 }
+
+variable "bitcoin_ec2_instance_type" {
+  type        = string
+  description = "ec2 instance type to run"
+}
+
+variable "bitcoin_key_name" {
+  type        = string
+  description = "ssh key to add to ec2 instances"
+}
+
+variable "bitcoin_task_cpu" {
+  type        = string
+  description = "vCPU for instance * 1024 https://aws.amazon.com/ec2/instance-types/"
+}
+
+variable "bitcoin_task_cpu_count" {
+  type        = string
+  description = "vCPU count for instance https://aws.amazon.com/ec2/instance-types/"
+}
+
+variable "bitcoin_task_memory" {
+  type        = string
+  description = "Memory limit for instance in GiB * 1024 https://aws.amazon.com/ec2/instance-types/"
+}
