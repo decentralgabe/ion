@@ -13,7 +13,7 @@ availability_zone_2   = "us-west-2b"
 
 # Bitcoin
 bitcoin_container_image   = "ruimarinho/bitcoin-core:23.0"
-bitcoin_ec2_instance_type = "m5n.nlarge"
+bitcoin_ec2_instance_type = "m5n.xlarge"
 bitcoin_key_name          = "gabe"
 bitcoin_task_cpu          = "2048"
 bitcoin_task_cpu_count    = "2"

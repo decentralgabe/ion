@@ -1,5 +1,3 @@
-FROM node:lts-alpine3.14
+FROM 'ipfs/kubo:v0.16.0'
 
-COPY node_modules /node_modules
-COPY dist /ion
-COPY config /config
+COPY ipfs-conf.sh /container-init.d/
